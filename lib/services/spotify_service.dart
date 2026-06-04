@@ -93,12 +93,12 @@ class SpotifyService with ChangeNotifier {
       
       // Build the authorization request
       // Note: flutter_appauth uses AuthorizationRequest, not AuthorizationTokenRequest
+      // codeVerifier is NOT used in AuthorizationRequest - it's only for token exchange
       final request = AuthorizationRequest(
         SpotifyConfig.clientId,
         redirectUri,
         discoveryUrl: null,
         scopes: SpotifyConfig.scopes,
-        codeVerifier: codeVerifier,
         // Additional parameters for Spotify PKCE
         additionalParameters: {
           'code_challenge': codeChallenge,

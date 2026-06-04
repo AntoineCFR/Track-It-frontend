@@ -120,17 +120,17 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 32),
 
                     // Divider
-                    const Row(
+                    Row(
                       children: [
-                        Expanded(child: Divider(color: Colors.grey[700])),
+                        const Expanded(child: Divider(color: Colors.grey)),
                         Padding(
-                          padding: EdgeInsets.symmetric(horizontal: 16),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
                           child: Text(
                             'OR',
-                            style: TextStyle(color: Colors.grey),
+                            style: TextStyle(color: Colors.grey[500]),
                           ),
                         ),
-                        Expanded(child: Divider(color: Colors.grey[700])),
+                        const Expanded(child: Divider(color: Colors.grey)),
                       ],
                     ),
                     const SizedBox(height: 24),
