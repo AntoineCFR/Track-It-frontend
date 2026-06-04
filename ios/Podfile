@@ -1,0 +1,73 @@
+# Uncomment this line to define a global platform for your project
+platform :ios, '14.0'
+
+# CocoaPods analytics sends network stats synchronously affecting flutter build latency.
+ENV['COCOAPODS_DISABLE_STATS'] = 'true'
+
+project 'Runner', {
+  'Debug' => :debug,
+  'Profile' => :release,
+  'Release' => :release,
+}
+
+def flutter_root
+  generated_xcode_build_settings_path = File.expand_path(File.join('..', '.flutter-plugins-sentinal'))
+  unless File.exist?(generated_xcode_build_settings_path)
+    raise "#{generated_xcode_build_settings_path} must exist. Did you run flutter pub get in the project directory?"
+  end
+
+  File.foreach(generated_xcode_build_settings_path) do |line|
+    matches = line.match(/FLUTTER_ROOT=(\S+)/)
+    if matches != nil
+      return matches[1].strip
+    end
+  end
+  raise "FLUTTER_ROOT not found in #{generated_xcode_build_settings_path}. Try deleting Generated.xcconfig, then run flutter pub get"
+end
+
+require File.expand_path(File.join(flutter_root, '.ios', 'Flutter', 'podhelper.rb'))
+
+flutter_application_path = File.expand_path(File.join('..', '..', '..', '..'))
+symlink_destination = File.expand_path(File.join(flutter_application_path, '.ios', 'Flutter'))
+symlink = File.expand_path(File.join('Flutter'))
+
+# This script is a convenience script to generate the symlink at the
+# correct location. This script assumes that it is being run from the
+# directory where the Podfile exists. This is the case for CocoaPods.
+if File.exist?(symlink)
+  File.delete(symlink)
+end
+
+File.symlink(symlink_destination, symlink)
+
+post_install do |installer|
+  installer.pods_project.targets.each do |target|
+    flutter_additional_ios_build_settings(target)
+    
+    # Firebase configuration
+    target.build_configurations.each do |config|
+      config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= [
+        '$(inherited)',
+        'PERMISSION_CAMERA=1',
+        'PERMISSION_MICROPHONE=1',
+      ]
+    end
+  end
+end
+
+target 'Runner' do
+  use_frameworks!
+  use_modular_headers!
+
+  # Firebase pods
+  pod 'Firebase/Core'
+  pod 'Firebase/Auth'
+  pod 'Firebase/Firestore'
+  pod 'GoogleSignIn'
+  
+  # Spotify OAuth
+  pod 'AppAuth', '~> 1.7.0'
+end
+
+flutter_target = 'Runner'
+flutter_test_target = 'RunnerTests'

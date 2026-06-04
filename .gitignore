@@ -1,0 +1,68 @@
+# Flutter
+**/doc/api/
+**/ios/Flutter/
+**/android/.idea/
+.idea
+.flutter-plugins-dependencies
+.packages
+pubspec.lock
+build/
+
+# Android
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/*.jks
+**/android/*.keystore
+**/android/app/google-services.json
+
+# iOS
+**/ios/.symlinks/
+**/ios/Flutter/
+**/ios/GoogleService-Info.plist
+**/ios/Pods/
+**/ios/Runner/GeneratedPluginRegistrant.*
+**/ios/ServiceDefinitions.json
+**/ios/Runner/Assets.xcassets/AppIcon.appiconset/
+**/ios/Runner/Base.lproj/
+
+# macOS
+**/macos/.symlinks/
+**/macos/Flutter/
+**/macos/Pods/
+
+# Linux
+**/linux/include/
+**/linux/.cxx/
+
+# Windows
+**/windows/Flutter/
+**/windows/runner/
+
+# Web
+**/web/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Firebase
+firebase.json
+.firestore.indexes.json
+
+# Dart
+.dart_tool/
+
+# System
+.DS_Store
+Thumbs.db
