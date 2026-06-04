@@ -34,8 +34,9 @@ import GoogleSignIn
       return true
     }
     
-    // Handle Spotify OAuth callback
-    if url.scheme == "com.AntoineCFR.trackit" && url.host == "callback" {
+    // Handle Spotify OAuth callback - Official schemes
+    let spotifySchemes = ["spotify-ios-quick-start", "com.spotify.sdk", "com.AntoineCFR.trackit"]
+    if spotifySchemes.contains(url.scheme) {
       // The AppAuth plugin will handle this
       return super.application(app, open: url, options: options)
     }
@@ -55,8 +56,9 @@ import GoogleSignIn
       return true
     }
     
-    // Handle Spotify OAuth callback
-    if url.scheme == "com.AntoineCFR.trackit" && url.host == "callback" {
+    // Handle Spotify OAuth callback - Official schemes
+    let spotifySchemes = ["spotify-ios-quick-start", "com.spotify.sdk", "com.AntoineCFR.trackit"]
+    if spotifySchemes.contains(url.scheme) {
       return super.application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
     }
     

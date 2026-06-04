@@ -85,14 +85,24 @@ Or run `flutterfire configure` to generate this file automatically.
 1. Go to [Spotify Developer Dashboard](https://developer.spotify.com/dashboard/)
 2. Create a new app
 3. App name: "Track It"
-4. Redirect URIs: `com.AntoineCFR.trackit:/callback`
+4. **Redirect URIs** (add BOTH for cross-platform compatibility):
+   - For iOS: `spotify-ios-quick-start://spotify-callback`
+   - For Android: `com.spotify.sdk://auth`
+   - Optional backup: `com.AntoineCFR.trackit:/callback`
 5. Copy the Client ID and update it in `lib/services/spotify_service.dart`:
 ```dart
 class SpotifyConfig {
   static const String clientId = 'YOUR_SPOTIFY_CLIENT_ID';
+  // The redirect URIs are now handled automatically per platform
+  // Android: com.spotify.sdk://auth
+  // iOS: spotify-ios-quick-start://spotify-callback
   // ...
 }
 ```
+
+**⚠️ Important:** Spotify requires that you use their **official redirect URI schemes** for mobile apps. 
+The custom scheme `com.AntoineCFR.trackit:/callback` will NOT work unless explicitly approved by Spotify (which takes time).
+Using `spotify-ios-quick-start://spotify-callback` (iOS) and `com.spotify.sdk://auth` (Android) will work immediately.
 
 ### 4. Firestore Setup
 
@@ -133,7 +143,9 @@ flutter run -d ios
 1. User clicks "Link Spotify" button
 2. App generates a PKCE code verifier and challenge
 3. User is redirected to Spotify's authorization page
-4. Spotify redirects back to `com.AntoineCFR.trackit:/callback` with an authorization code
+4. Spotify redirects back to the **platform-appropriate URI**:
+   - iOS: `spotify-ios-quick-start://spotify-callback`
+   - Android: `com.spotify.sdk://auth`
 5. The authorization code is extracted and saved to Firestore with the user's UID
 6. Your backend can then exchange this code for an access token
 

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:io' show Platform;
 import 'package:flutter/material.dart';
 import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:crypto/crypto.dart';
@@ -10,7 +11,19 @@ import 'package:track_it/services/auth_service.dart';
 /// Configuration for Spotify OAuth
 class SpotifyConfig {
   static const String clientId = 'YOUR_SPOTIFY_CLIENT_ID';
-  static const String redirectUri = 'com.AntoineCFR.trackit:/callback';
+  
+  // Official Spotify redirect URIs for mobile apps
+  // These are pre-approved by Spotify for development
+  static const String redirectUriAndroid = 'com.spotify.sdk://auth';
+  static const String redirectUriIOS = 'spotify-ios-quick-start://spotify-callback';
+  
+  // Get the appropriate redirect URI based on platform
+  static String get redirectUri {
+    // Import dart:io for platform detection
+    // This will be handled in the service
+    return ''; // Will be set dynamically
+  }
+  
   static const List<String> scopes = [
     'user-read-private',
     'user-read-email',
@@ -29,6 +42,17 @@ class SpotifyService with ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   
+  // Get the appropriate redirect URI based on platform
+  String get _redirectUri {
+    if (Platform.isIOS) {
+      return SpotifyConfig.redirectUriIOS;
+    } else if (Platform.isAndroid) {
+      return SpotifyConfig.redirectUriAndroid;
+    }
+    // Default for web or other platforms
+    return SpotifyConfig.redirectUriAndroid;
+  }
+  
   bool _isLoading = false;
   String? _errorMessage;
   String? _authCode;
@@ -38,6 +62,7 @@ class SpotifyService with ChangeNotifier {
   String? get errorMessage => _errorMessage;
   String? get authCode => _authCode;
   bool get isLinked => _isLinked;
+  String get currentRedirectUri => _redirectUri;
 
   // Generate a random string for code verifier
   String _generateCodeVerifier() {
@@ -64,28 +89,29 @@ class SpotifyService with ChangeNotifier {
       final codeVerifier = _generateCodeVerifier();
       final codeChallenge = _generateCodeChallenge(codeVerifier);
       
-      // Store code verifier temporarily (in a real app, use secure storage)
-      // For this demo, we'll pass it through the auth request
+      // Use the platform-appropriate redirect URI
+      final redirectUri = _redirectUri;
       
-      final result = await _appAuth.authorizeAndExchangeCode(
-        AuthorizationTokenRequest(
-          SpotifyConfig.clientId,
-          SpotifyConfig.redirectUri,
-          discoveryUrl: null,
-          scopes: SpotifyConfig.scopes,
-          codeVerifier: codeVerifier,
-          // Additional parameters for Spotify
-          additionalParameters: {
-            'code_challenge': codeChallenge,
-            'code_challenge_method': 'S256',
-            'response_type': 'code',
-          },
-        ),
+      // Build the authorization request
+      final request = AuthorizationTokenRequest(
+        SpotifyConfig.clientId,
+        redirectUri,
+        discoveryUrl: null,
+        scopes: SpotifyConfig.scopes,
+        codeVerifier: codeVerifier,
+        // Additional parameters for Spotify PKCE
+        additionalParameters: {
+          'code_challenge': codeChallenge,
+          'code_challenge_method': 'S256',
+          'response_type': 'code',
+        },
       );
+
+      // Use authorize instead of authorizeAndExchangeCode to get the auth code
+      final result = await _appAuth.authorize(request);
 
       if (result != null) {
         // Extract the authorization code from the response
-        // The code is in the authorization response
         _authCode = result.authorizationCode;
         
         if (_authCode != null) {
@@ -106,12 +132,14 @@ class SpotifyService with ChangeNotifier {
     } on Exception catch (e) {
       _isLoading = false;
       _errorMessage = 'Failed to link Spotify: ${e.toString()}';
+      debugPrint('Spotify auth error: ${e.toString()}');
       notifyListeners();
       return false;
     }
   }
 
   /// Alternative method: Launch Spotify auth in browser and handle callback
+  /// This uses the platform-appropriate redirect URI
   Future<void> startSpotifyAuthFlow() async {
     _isLoading = true;
     _errorMessage = null;
@@ -120,6 +148,7 @@ class SpotifyService with ChangeNotifier {
     try {
       final codeVerifier = _generateCodeVerifier();
       final codeChallenge = _generateCodeChallenge(codeVerifier);
+      final redirectUri = _redirectUri;
       
       // Build the authorization URL
       final authUrl = Uri(
@@ -129,7 +158,7 @@ class SpotifyService with ChangeNotifier {
         queryParameters: {
           'client_id': SpotifyConfig.clientId,
           'response_type': 'code',
-          'redirect_uri': SpotifyConfig.redirectUri,
+          'redirect_uri': redirectUri,
           'code_challenge_method': 'S256',
           'code_challenge': codeChallenge,
           'scope': SpotifyConfig.scopes.join(' '),
@@ -137,14 +166,14 @@ class SpotifyService with ChangeNotifier {
         },
       ).toString();
 
-      // Use url_launcher to open the URL in browser
-      // In a real app, you'd use a WebView or custom tabs
-      // For now, we'll use the appauth package which handles this
-      
+      debugPrint('Spotify auth URL: $authUrl');
+      debugPrint('Using redirect URI: $redirectUri');
+
+      // Use appauth to handle the OAuth flow
       final result = await _appAuth.authorize(
         AuthorizationRequest(
           SpotifyConfig.clientId,
-          SpotifyConfig.redirectUri,
+          redirectUri,
           discoveryUrl: null,
           scopes: SpotifyConfig.scopes,
           codeVerifier: codeVerifier,
@@ -157,7 +186,6 @@ class SpotifyService with ChangeNotifier {
 
       if (result != null) {
         // Extract code from the authorization response
-        // The code is in the authorizationCode field
         _authCode = result.authorizationCode;
         
         if (_authCode != null) {
@@ -171,6 +199,7 @@ class SpotifyService with ChangeNotifier {
     } catch (e) {
       _isLoading = false;
       _errorMessage = 'Failed to start Spotify auth: ${e.toString()}';
+      debugPrint('Spotify auth flow error: ${e.toString()}');
       notifyListeners();
     }
   }

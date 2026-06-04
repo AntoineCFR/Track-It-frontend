@@ -41,7 +41,17 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
 
-            <!-- Spotify OAuth Callback -->
+            <!-- Spotify OAuth Callback - Official Spotify SDK scheme -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW"/>
+                <category android:name="android.intent.category.DEFAULT"/>
+                <category android:name="android.intent.category.BROWSABLE"/>
+                <data
+                    android:scheme="com.spotify.sdk"
+                    android:host="auth"/>
+            </intent-filter>
+            
+            <!-- Legacy custom scheme (backup) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW"/>
                 <category android:name="android.intent.category.DEFAULT"/>

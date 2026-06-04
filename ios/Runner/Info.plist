@@ -20,17 +20,6 @@
 	<string>1.0.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleURLTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>com.AntoineCFR.trackit</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleVersion</key>
 	<string>1.0.0</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -69,14 +58,33 @@
 		<integer>UIInterfaceOrientationLandscapeLeft</integer>
 		<integer>UIInterfaceOrientationLandscapeRight</integer>
 	</array>
-	
+
 	<!-- Firebase -->
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
-	
-	<!-- Google Sign In -->
+
+	<!-- URL Types for Deep Linking -->
 	<key>CFBundleURLTypes</key>
 	<array>
+		<!-- Spotify OAuth - Official iOS scheme -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>spotify-ios-quick-start</string>
+			</array>
+		</dict>
+		<!-- Spotify OAuth - Android SDK scheme (for compatibility) -->
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.spotify.sdk</string>
+			</array>
+		</dict>
+		<!-- Custom scheme for Track It -->
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -85,6 +93,7 @@
 				<string>com.AntoineCFR.trackit</string>
 			</array>
 		</dict>
+		<!-- Google Sign In -->
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -94,20 +103,21 @@
 			</array>
 		</dict>
 	</array>
-	
-	<!-- Spotify OAuth Callback -->
+
+	<!-- Spotify OAuth - Query Schemes -->
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>spotify</string>
+		<string>spotify-ios-quick-start</string>
 	</array>
-	
+
 	<!-- Privacy Descriptions -->
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
-	
+
 	<!-- Camera and Microphone Permissions (for future use) -->
 	<key>NSCameraUsageDescription</key>
 	<string>Track It needs camera access for QR code scanning</string>
