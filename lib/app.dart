@@ -16,12 +16,13 @@ class TrackItApp extends StatelessWidget {
       redirect: (context, state) {
         final authService = Provider.of<AuthService>(context, listen: false);
         final isLoggedIn = authService.currentUser != null;
+        final location = state.uri.path;
         
-        if (!isLoggedIn && state.location != '/login') {
+        if (!isLoggedIn && location != '/login') {
           return '/login';
         }
         
-        if (isLoggedIn && state.location == '/login') {
+        if (isLoggedIn && location == '/login') {
           return '/home';
         }
         

@@ -6,7 +6,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:track_it/main.dart';
+import 'package:track_it/app.dart';
 
 void main() {
   testWidgets('Track It App - Login Screen Test', (WidgetTester tester) async {

@@ -191,10 +191,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           onPressed: () {
                             // TODO: Implement sign up
                           },
-                          child: const Text(
+                          child: Text(
                             'Sign Up',
                             style: TextStyle(
-                              color: Color(0xFF1DB954),
+                              color: const Color(0xFF1DB954),
                               fontWeight: FontWeight.bold,
                             ),
                           ),

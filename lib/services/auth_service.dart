@@ -118,26 +118,6 @@ class AuthService with ChangeNotifier {
     notifyListeners();
   }
 
-  // Create user document in Firestore if it doesn't exist
-  Future<void> _ensureUserDocument() async {
-    if (_currentUser == null) return;
-    
-    final userDoc = _firestore.collection('users').doc(_currentUser!.uid);
-    final doc = await userDoc.get();
-    
-    if (!doc.exists) {
-      await userDoc.set({
-        'uid': _currentUser!.uid,
-        'email': _currentUser!.email,
-        'displayName': _currentUser!.displayName,
-        'photoURL': _currentUser!.photoURL,
-        'createdAt': FieldValue.serverTimestamp(),
-        'spotifyLinked': false,
-        'spotifyCode': null,
-      });
-    }
-  }
-
   // Get user document
   Future<DocumentSnapshot> getUserDocument() async {
     if (_currentUser == null) {

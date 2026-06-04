@@ -6,7 +6,6 @@ import 'package:flutter_appauth/flutter_appauth.dart';
 import 'package:crypto/crypto.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:track_it/services/auth_service.dart';
 
 /// Configuration for Spotify OAuth
 class SpotifyConfig {
@@ -93,7 +92,8 @@ class SpotifyService with ChangeNotifier {
       final redirectUri = _redirectUri;
       
       // Build the authorization request
-      final request = AuthorizationTokenRequest(
+      // Note: flutter_appauth uses AuthorizationRequest, not AuthorizationTokenRequest
+      final request = AuthorizationRequest(
         SpotifyConfig.clientId,
         redirectUri,
         discoveryUrl: null,
@@ -107,7 +107,7 @@ class SpotifyService with ChangeNotifier {
         },
       );
 
-      // Use authorize instead of authorizeAndExchangeCode to get the auth code
+      // Use authorize to get the auth code
       final result = await _appAuth.authorize(request);
 
       if (result != null) {
@@ -170,13 +170,16 @@ class SpotifyService with ChangeNotifier {
       debugPrint('Using redirect URI: $redirectUri');
 
       // Use appauth to handle the OAuth flow
+      // Note: AuthorizationRequest doesn't use codeVerifier directly
+      // The codeVerifier is used in the token exchange step (not implemented here)
       final result = await _appAuth.authorize(
         AuthorizationRequest(
           SpotifyConfig.clientId,
           redirectUri,
           discoveryUrl: null,
           scopes: SpotifyConfig.scopes,
-          codeVerifier: codeVerifier,
+          // codeVerifier is NOT used in AuthorizationRequest
+          // It's only used in AuthorizationTokenRequest for token exchange
           additionalParameters: {
             'code_challenge': codeChallenge,
             'code_challenge_method': 'S256',
